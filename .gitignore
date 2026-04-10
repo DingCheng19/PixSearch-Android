@@ -1,0 +1,28 @@
+# --- Android Studio / IntelliJ ---
+.idea/
+*.iml
+.gradle/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# --- Build Output ---
+build/
+*/build/
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Signing files (Security) ---
+*.jks
+*.keystore
+*.pk8
+*.pem
+google-services.json
+
+# --- Secrets (API Keys) ---
+# Pexels APIキーなどを外部ファイルに切り出す場合、それも除外します
+secrets.properties
