@@ -38,34 +38,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun SearchScreenRoute() {
-    val dummyState = SearchUiState(
-        query = "cat",
-        photos = listOf(
-            PhotoItemUiModel(
-                id = 1,
-                previewUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
-                originalUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
-                photographer = "John Doe"
-            ),
-            PhotoItemUiModel(
-                id = 2,
-                previewUrl = "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
-                originalUrl = "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
-                photographer = "Jane Smith"
-            )
-        ),
-        hasSearched = true
-    )
+fun SearchScreenRoute(
+    searchViewModel: SearchViewModel = viewModel()
+) {
+    val uiState by searchViewModel.uiState.collectAsState()
 
     SearchScreen(
-        uiState = dummyState,
-        onQueryChange = {},
-        onSearchClick = {},
+        uiState = uiState,
+        onQueryChange = searchViewModel::onQueryChange,
+        onSearchClick = searchViewModel::onSearchClick,
         onPhotoClick = {},
-        onRetryClick = {}
+        onRetryClick = searchViewModel::onRetryClick
     )
 }
 
