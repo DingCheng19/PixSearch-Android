@@ -1,11 +1,14 @@
 package com.example.pixsearch.ui.search
 
 import androidx.lifecycle.ViewModel
+import com.example.pixsearch.data.repository.PhotoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel (
+    private val photoRepository: PhotoRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
 
