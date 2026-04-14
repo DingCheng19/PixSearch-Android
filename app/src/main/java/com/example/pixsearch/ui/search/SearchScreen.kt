@@ -41,11 +41,23 @@ import coil.compose.AsyncImage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pixsearch.BuildConfig
+import com.example.pixsearch.data.network.RetrofitProvider
+import com.example.pixsearch.data.repository.PhotoRepositoryImpl
 
 @Composable
-fun SearchScreenRoute(
-    searchViewModel: SearchViewModel = viewModel()
-) {
+fun SearchScreenRoute() {
+    val apiService = remember {
+        RetrofitProvider.createPexelsApiService(BuildConfig.PEXELS_API_KEY)
+    }
+    val repository = remember {
+        PhotoRepositoryImpl(apiService)
+    }
+    val factory = remember {
+        SearchViewModelFactory(repository)
+    }
+
+    val searchViewModel: SearchViewModel = viewModel(factory = factory)
     val uiState by searchViewModel.uiState.collectAsState()
 
     SearchScreen(

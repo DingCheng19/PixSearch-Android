@@ -1,10 +1,12 @@
 package com.example.pixsearch.ui.search
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.pixsearch.data.repository.PhotoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SearchViewModel (
     private val photoRepository: PhotoRepository
@@ -17,27 +19,42 @@ class SearchViewModel (
     }
 
     fun onSearchClick() {
-        // まずはダミー検索でもOK
+        val query = _uiState.value.query
+
+        if (query.isBlank()) return
+
+        // ローディング開始
         _uiState.update {
             it.copy(
-                hasSearched = true,
-                photos = listOf(
-                    PhotoItemUiModel(
-                        id = 1,
-                        previewUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
-                        originalUrl = "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
-                        photographer = "John Doe"
-                    ),
-                    PhotoItemUiModel(
-                        id = 2,
-                        previewUrl = "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
-                        originalUrl = "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
-                        photographer = "Jane Smith"
-                    )
-                )
+                isLoading = true,
+                errorMessage = null
             )
         }
+
+        viewModelScope.launch {
+            try {
+                // 🔥 Repository経由でAPI呼び出し
+                val photos = photoRepository.searchPhotos(query)
+
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        hasSearched = true,
+                        photos = photos
+                    )
+                }
+
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "検索に失敗しました"
+                    )
+                }
+            }
+        }
     }
+
 
     fun onRetryClick() {
         onSearchClick()

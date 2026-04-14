@@ -16,6 +16,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "PEXELS_API_KEY", "\"REMOVED_API_KEY\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
