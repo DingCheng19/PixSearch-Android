@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pixsearch.BuildConfig
 import com.example.pixsearch.data.network.RetrofitProvider
@@ -99,10 +101,17 @@ fun SearchScreen(
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .clickable {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             SearchBarSection(
@@ -153,6 +162,8 @@ private fun SearchBarSection(
     onQueryChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     Column {
         OutlinedTextField(
             value = query,
@@ -162,14 +173,22 @@ private fun SearchBarSection(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
-                onSearch = { onSearchClick() }
+                onSearch = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSearchClick()
+                }
             )
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = onSearchClick,
+            onClick = {
+                focusManager.clearFocus()      // 👈 フォーカス外す
+                keyboardController?.hide()     // 👈 キーボード閉じる
+                onSearchClick()
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = query.isNotBlank()
         ) {
