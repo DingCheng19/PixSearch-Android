@@ -48,7 +48,9 @@ import com.example.pixsearch.data.network.RetrofitProvider
 import com.example.pixsearch.data.repository.PhotoRepositoryImpl
 
 @Composable
-fun SearchScreenRoute() {
+fun SearchScreenRoute(
+    onPhotoClick: (PhotoItemUiModel) -> Unit
+) {
     val apiService = remember {
         RetrofitProvider.createPexelsApiService(BuildConfig.PEXELS_API_KEY)
     }
@@ -66,7 +68,7 @@ fun SearchScreenRoute() {
         uiState = uiState,
         onQueryChange = searchViewModel::onQueryChange,
         onSearchClick = searchViewModel::onSearchClick,
-        onPhotoClick = {},
+        onPhotoClick = onPhotoClick,
         onRetryClick = searchViewModel::onRetryClick
     )
 }

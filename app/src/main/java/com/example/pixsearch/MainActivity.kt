@@ -1,16 +1,15 @@
 package com.example.pixsearch
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.pixsearch.ui.detail.DetailScreen
 import com.example.pixsearch.ui.search.SearchScreenRoute
 import com.example.pixsearch.ui.theme.PixSearchTheme
 
@@ -20,8 +19,46 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PixSearchTheme {
-                SearchScreenRoute()
+                PixSearchApp()
             }
+        }
+    }
+}
+
+@Composable
+fun PixSearchApp() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "search"
+    ) {
+        composable("search") {
+            SearchScreenRoute(
+                onPhotoClick = { photo ->
+                    val encodedImageUrl = Uri.encode(photo.originalUrl)
+                    val encodedPhotographer = Uri.encode(photo.photographer)
+
+                    navController.navigate(
+                        "detail/$encodedImageUrl/$encodedPhotographer"
+                    )
+                }
+            )
+        }
+
+        composable("detail/{imageUrl}/{photographer}") { backStackEntry ->
+            val imageUrl =
+                backStackEntry.arguments?.getString("imageUrl").orEmpty()
+            val photographer =
+                backStackEntry.arguments?.getString("photographer").orEmpty()
+
+            DetailScreen(
+                imageUrl = imageUrl,
+                photographer = photographer,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
